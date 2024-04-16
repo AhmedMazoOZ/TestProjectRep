@@ -79,6 +79,7 @@
         android:gravity="center"
         android:background="#DFDBDB"
         android:padding="10dp"
+        android:visibility="visible"
         android:orientation="horizontal">
         <LinearLayout
             android:layout_width="wrap_content"
@@ -97,23 +98,25 @@
                     android:layout_height="10dp"
                     android:background="#F40707" />
 
-                <ProgressBar
+                <SeekBar
                     android:id="@+id/progressbar_red"
                     style="@android:style/Widget.Material.ProgressBar.Horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
                     android:layout_above="@+id/bottom_header_relativelayout"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="5dp"
-                    android:max="100"
-                    android:progress="10"
+                   android:thumbTint="#88C0E4"
+                    android:max="255"
+                    android:progress="100"
                     android:progressTint="#F60404" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -121,23 +124,25 @@
                     android:layout_height="10dp"
                     android:background="#44FF00" />
 
-                <ProgressBar
+                <SeekBar
                     android:id="@+id/progressbar_green"
                     style="@android:style/Widget.Material.ProgressBar.Horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
                     android:layout_above="@+id/bottom_header_relativelayout"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="5dp"
-                    android:max="100"
-                    android:progress="10"
+                    android:max="255"
+                    android:thumbTint="#88C0E4"
+                    android:progress="100"
                     android:progressTint="#44FF00" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -145,20 +150,23 @@
                     android:layout_height="10dp"
                     android:background="#0022FA" />
 
-                <ProgressBar
+                <SeekBar
                     android:id="@+id/progressbar_blue"
                     style="@android:style/Widget.Material.ProgressBar.Horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_above="@+id/bottom_header_relativelayout"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="5dp"
-                    android:max="100"
-                    android:progress="10"
+                    android:layout_gravity="center_vertical"
+                    android:max="255"
+                    android:thumbTint="#88C0E4"
+                    android:progress="100"
                     android:progressTint="#0022FA" />
             </LinearLayout>
         </LinearLayout>
         <ImageView
+            android:id="@+id/confirm_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
