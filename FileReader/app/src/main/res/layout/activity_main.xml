@@ -9,26 +9,49 @@
     android:layout_marginBottom="50dp"
     android:background="@color/white"
     tools:context=".MainActivity">
+    <TextView
+        android:id="@+id/txt_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text=""
+        android:gravity="center_horizontal"
+        android:textSize="20dp"
+        />
 
+    <LinearLayout
+        android:id="@+id/hLinesCont"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_header"
+        android:layout_margin="10dp"
+        android:orientation="vertical"/>
+    <TextView
+        android:id="@+id/txt_t_one"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center_horizontal"
+        android:text="الأسد"
+        android:textColor="#FF3D00"
+        android:textSize="25dp"
+        />
     <ScrollView
         android:id="@+id/scrl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/editlay"
-        android:layout_marginTop="40dp">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/hLinesCont"
+        android:layout_above="@+id/editlay">
 
         <TextView
             android:id="@+id/txt_tv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text=""
             android:textColor="@color/black"
             android:textSize="15dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            />
 
     </ScrollView>
 
@@ -79,7 +102,7 @@
         android:gravity="center"
         android:background="#DFDBDB"
         android:padding="10dp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:orientation="horizontal">
         <LinearLayout
             android:layout_width="wrap_content"

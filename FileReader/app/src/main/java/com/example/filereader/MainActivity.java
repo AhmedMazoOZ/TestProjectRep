@@ -2,6 +2,9 @@ package com.example.filereader;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -14,11 +17,15 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    TextView txt_tv;
+    TextView txt_tv,txt_t_one;
     ImageView zoomin, zoomout, textcolor, backgroundcolor, confirm_color;
     Animation animation, animation2;
 
@@ -29,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
     SeekBar progressbar_red, progressbar_green, progressbar_blue;
     int red_value, green_value, blue_value, color_value;
     RelativeLayout main;
-    String hex;
+    String hex, LineValue;
+
+    List<String> Headlines,newHeadlines;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +56,41 @@ public class MainActivity extends AppCompatActivity {
         progressbar_blue = (SeekBar) findViewById(R.id.progressbar_blue);
         confirm_color = (ImageView) findViewById(R.id.confirm_color);
         main = (RelativeLayout) findViewById(R.id.main);
-        String text = "";
-
+        txt_t_one=(TextView)findViewById(R.id.txt_t_one);
+        String text = "", line = "";
+        Headlines = new ArrayList<>();
+        Headlines.clear();
+        newHeadlines = new ArrayList<>();
+        newHeadlines.clear();
         red_value = progressbar_red.getProgress();
         green_value = progressbar_green.getProgress();
         blue_value = progressbar_blue.getProgress();
         hex = String.format("#%02X%02X%02X", red_value, green_value, blue_value);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("testfile.txt")))) {
+
+            boolean firstHeadingFound = false;
+            while ((line = br.readLine()) != null) {
+                if (!firstHeadingFound) {
+                    Log.d("fdfgert", line);
+                    Log.d("fdfgert", "10");
+                    firstHeadingFound = true;
+                    processHeading(line);
+                }
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("testfile.txt")))) {
+            while ((line = br.readLine()) != null) {
+                Headlines.add(line);
+            }
+            checklines(Headlines);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         try {
             InputStream is = getAssets().open("testfile.txt");
             int size = is.available();
@@ -63,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        //txt_tv.setText(Html.fromHtml(text));
 
         txt_tv.setText(text);
         confirm_color.setOnClickListener(new View.OnClickListener() {
@@ -177,4 +216,58 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void checklines(List<String> headlines) {
+        Log.d("ewrwerwerwer", String.valueOf(headlines.size()));
+        for (int i=0;i<headlines.size();i++){
+            if (startsWithNumber(headlines.get(i))) {
+                LineValue = headlines.get(i);
+                newHeadlines.add(LineValue);
+
+            }
+        }
+        processHeadlines(newHeadlines);
+    }
+
+
+    private void processHeading(String line) {
+
+        SpannableStringBuilder sb = new SpannableStringBuilder(line);
+        sb.setSpan(new ForegroundColorSpan(Color.RED), 0, line.length(), 0);
+        sb.setSpan(new UnderlineSpan(), 0, line.length(), 0);
+        TextView textView = findViewById(R.id.txt_header);
+        textView.setText(sb);
+
+    }
+
+    private void processHeadlines(List<String> line) {
+
+
+        LinearLayout hLinesCont = findViewById(R.id.hLinesCont);
+        Log.d("sdfsdfsdfsdf", String.valueOf(line.size()));
+        for (int i = 0; i < line.size(); i++) {
+
+            // Create a new TextView
+            SpannableStringBuilder sb = new SpannableStringBuilder(line.get(i));
+            sb.setSpan(new ForegroundColorSpan(Color.BLUE), 0, line.get(i).length(), 0);
+            sb.setSpan(new UnderlineSpan(), 0, line.get(i).length(), 0);
+            TextView textView = new TextView(this);
+
+            // Set the text for the TextView
+            textView.setText(sb);
+
+            // Set layout params (optional)
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            textView.setLayoutParams(params);
+
+            // Add the TextView to the LinearLayout
+            hLinesCont.addView(textView);
+        }
+
+    }
+
+    public static boolean startsWithNumber(String str) {
+        return str != null && str.length() > 0 && Character.isDigit(str.charAt(0));
+    }
 }
