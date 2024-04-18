@@ -1,18 +1,29 @@
 package com.example.filereader;
 
+import static android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE;
+
+import android.content.ClipboardManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    TextView txt_tv,txt_t_one;
+    TextView txt_tv, txt_t_one;
     ImageView zoomin, zoomout, textcolor, backgroundcolor, confirm_color;
     Animation animation, animation2;
 
@@ -38,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout main;
     String hex, LineValue;
 
-    List<String> Headlines,newHeadlines;
+    List<String> Headlines, newHeadlines;
+    String text = "", line = "";
+    public static final int MENU_RESOURCE_ID = R.menu.text_selection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
         progressbar_blue = (SeekBar) findViewById(R.id.progressbar_blue);
         confirm_color = (ImageView) findViewById(R.id.confirm_color);
         main = (RelativeLayout) findViewById(R.id.main);
-        txt_t_one=(TextView)findViewById(R.id.txt_t_one);
-        String text = "", line = "";
+
+
         Headlines = new ArrayList<>();
         Headlines.clear();
         newHeadlines = new ArrayList<>();
@@ -66,44 +79,14 @@ public class MainActivity extends AppCompatActivity {
         green_value = progressbar_green.getProgress();
         blue_value = progressbar_blue.getProgress();
         hex = String.format("#%02X%02X%02X", red_value, green_value, blue_value);
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("testfile.txt")))) {
 
-            boolean firstHeadingFound = false;
-            while ((line = br.readLine()) != null) {
-                if (!firstHeadingFound) {
-                    Log.d("fdfgert", line);
-                    Log.d("fdfgert", "10");
-                    firstHeadingFound = true;
-                    processHeading(line);
-                }
-            }
+        readFile();
+        readTitle();
+        readdectionary();
+        Onclick();
+    }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("testfile.txt")))) {
-            while ((line = br.readLine()) != null) {
-                Headlines.add(line);
-            }
-            checklines(Headlines);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            InputStream is = getAssets().open("testfile.txt");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            text = new String(buffer);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        //txt_tv.setText(Html.fromHtml(text));
-
-        txt_tv.setText(text);
+    public void Onclick() {
         confirm_color.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -216,9 +199,48 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void readTitle() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("testfile.txt")))) {
+            boolean firstHeadingFound = false;
+            while ((line = br.readLine()) != null) {
+                if (!firstHeadingFound) {
+                    firstHeadingFound = true;
+                    processHeading(line);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void readdectionary() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("testfile.txt")))) {
+            while ((line = br.readLine()) != null) {
+                Headlines.add(line);
+            }
+            checklines(Headlines);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void readFile() {
+        try {
+            InputStream is = getAssets().open("testfile.txt");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            text = new String(buffer);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        txt_tv.setText(text);
+    }
+
     private void checklines(List<String> headlines) {
         Log.d("ewrwerwerwer", String.valueOf(headlines.size()));
-        for (int i=0;i<headlines.size();i++){
+        for (int i = 0; i < headlines.size(); i++) {
             if (startsWithNumber(headlines.get(i))) {
                 LineValue = headlines.get(i);
                 newHeadlines.add(LineValue);
@@ -228,21 +250,21 @@ public class MainActivity extends AppCompatActivity {
         processHeadlines(newHeadlines);
     }
 
-
     private void processHeading(String line) {
 
         SpannableStringBuilder sb = new SpannableStringBuilder(line);
         sb.setSpan(new ForegroundColorSpan(Color.RED), 0, line.length(), 0);
         sb.setSpan(new UnderlineSpan(), 0, line.length(), 0);
+        sb.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, line.length(), SPAN_EXCLUSIVE_EXCLUSIVE);
         TextView textView = findViewById(R.id.txt_header);
         textView.setText(sb);
 
     }
 
     private void processHeadlines(List<String> line) {
-
-
         LinearLayout hLinesCont = findViewById(R.id.hLinesCont);
+        LinearLayout sections = findViewById(R.id.sections);
+        StringBuilder Paragraph;
         Log.d("sdfsdfsdfsdf", String.valueOf(line.size()));
         for (int i = 0; i < line.size(); i++) {
 
@@ -250,24 +272,175 @@ public class MainActivity extends AppCompatActivity {
             SpannableStringBuilder sb = new SpannableStringBuilder(line.get(i));
             sb.setSpan(new ForegroundColorSpan(Color.BLUE), 0, line.get(i).length(), 0);
             sb.setSpan(new UnderlineSpan(), 0, line.get(i).length(), 0);
-            TextView textView = new TextView(this);
+            sb.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, line.get(i).length(), SPAN_EXCLUSIVE_EXCLUSIVE);
 
+
+            Log.d("asdasdasd", line.get(i).substring(3, line.get(i).length()).trim());
+            String ASD1 = line.get(i).substring(3, line.get(i).length()).trim();
+            SpannableStringBuilder sbtit = new SpannableStringBuilder(ASD1);
+            sbtit.setSpan(new ForegroundColorSpan(Color.RED), 0, ASD1.length(), 0);
+
+
+            Log.d("asdasdasd", line.get(i).substring(3, line.get(i).length()).trim());
+            String ASD = line.get(i).substring(3, line.get(i).length()).trim();
+            String ASD2 = null;
+
+            ASD2 = line.get(i).substring(3, line.get(i).length()).trim();
+
+
+            try {
+                Paragraph = new StringBuilder(getParagraphAfterTitle(ASD, ASD2));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            SpannableStringBuilder sbpara = new SpannableStringBuilder(Paragraph);
+            sbpara.setSpan(new ForegroundColorSpan(Color.BLACK), 0, Paragraph.length(), 0);
+
+
+            TextView textView = new TextView(this);
+            TextView subTitle = new TextView(this);
+            TextView paragraph = new TextView(this);
+
+//            textView.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    // Get the text selection functionality
+////                    ((TextView) v).selectAll();
+//                    showPopupMenu((TextView) v);
+//                    return true; // Consume the long press event
+//                }
+//            });
+//            subTitle.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    // Get the text selection functionality
+////                    ((TextView) v).selectAll();
+//                    showPopupMenu((TextView) v);
+//                    return true; // Consume the long press event
+//                }
+//            });
+//            paragraph.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    // Get the text selection functionality
+////                    ((TextView) v).selectAll();
+//                    showPopupMenu((TextView) v);
+//                    return true; // Consume the long press event
+//                }
+//            });
+            subTitle.setGravity(Gravity.CENTER);
+            paragraph.setGravity(Gravity.CENTER);
             // Set the text for the TextView
             textView.setText(sb);
+            subTitle.setText(sbtit);
+            paragraph.setText(sbpara);
 
             // Set layout params (optional)
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
+
             textView.setLayoutParams(params);
+            textView.setTextIsSelectable(true);
+            textView.setHighlightColor(getResources().getColor(R.color.yellow));
+
+            subTitle.setLayoutParams(params);
+            subTitle.setTextIsSelectable(true);
+            subTitle.setHighlightColor(getResources().getColor(R.color.yellow));
+
+            subTitle.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    showPopupMenu((TextView)view );
+                    return false;
+                }
+            });
+            paragraph.setLayoutParams(params);
+            paragraph.setTextIsSelectable(true);
+            paragraph.setHighlightColor(getResources().getColor(R.color.yellow));
 
             // Add the TextView to the LinearLayout
             hLinesCont.addView(textView);
+            sections.addView(subTitle);
+            sections.addView(paragraph);
         }
 
     }
 
+    private void highlightSelectedText(TextView textView, int start, int end) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder(textView.getText());
+        ssb.setSpan(new BackgroundColorSpan(Color.YELLOW), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); // Set background color for highlighting
+        textView.setText(ssb);
+    }
+
+    private void showPopupMenu(final TextView textView) {
+        PopupMenu popupMenu = new PopupMenu(this, textView);
+        popupMenu.getMenuInflater().inflate(R.menu.text_selection, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                int startSelection = textView.getSelectionStart();
+                int endSelection = textView.getSelectionEnd();
+                if (id == R.id.action_copy) {
+                    // Get the selected text
+                    String selectedText = textView.getText().toString().substring(startSelection, endSelection);
+
+                    // Copy to clipboard
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    clipboard.setText(selectedText);
+                    Toast.makeText(MainActivity.this, "Text copied!", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if (id == R.id.action_highlight) {
+                    highlightSelectedText(textView,startSelection,endSelection);
+                } else if (id == R.id.action_share) {
+
+                } else if (id == R.id.action_selectall) {
+
+                } else if (id == R.id.action_bookmark) {
+
+                }
+                return false;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    // Optional menu resource (menu/text_selection.xml)
+
+
     public static boolean startsWithNumber(String str) {
         return str != null && str.length() > 0 && Character.isDigit(str.charAt(0));
+    }
+
+    public String getParagraphAfterTitle(String title, String title2) throws IOException {
+        StringBuilder paragraph = new StringBuilder();
+        boolean foundTitle = false;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getAssets().open("testfile.txt")))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Check if the line matches the title (case-insensitive)
+
+                if (line.trim().equalsIgnoreCase(title)) {
+                    foundTitle = true;
+                    Log.d("sdfsdfsdfsdf", "100");
+                    Log.d("sdfsdfsdfsdf", line.trim());
+                } else if (foundTitle) {
+                    // Skip empty lines after the title
+                    Log.d("sdfsdfsdfsdf", "200");
+                    Log.d("sdfsdfsdfsdf", line.trim());
+                    if (!line.isEmpty() && !line.trim().equalsIgnoreCase(title2)) {
+                        paragraph.append(line).append("\n"); // Add line with newline
+                    }
+                }
+
+            }
+        }
+
+        // Return paragraph or empty string if title not found or no paragraph after
+        return paragraph.toString().trim();
     }
 }
