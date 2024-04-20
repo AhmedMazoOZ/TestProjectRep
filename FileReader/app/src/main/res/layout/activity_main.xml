@@ -16,17 +16,51 @@
         android:text=""
         android:textIsSelectable="true"
         android:textSize="20dp" />
+    <LinearLayout
+        android:id="@+id/link_lay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layoutDirection="rtl"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/txt_header"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="اضغط"
+            android:layout_below="@+id/txt_header"
+            android:gravity="center_horizontal"
+            android:textColor="@color/lite_blue"
+            android:textSize="12dp" />
+        <TextView
+            android:id="@+id/txt_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/lite_blue"
+            android:textSize="12dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_below="@+id/txt_header"
+            android:text="لزيارة المصدر"
+            android:gravity="center_horizontal"
+            android:textColor="@color/lite_blue"
+            android:textSize="12dp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/hLinesCont"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txt_header"
+        android:layout_below="@+id/link_lay"
         android:layout_margin="10dp"
         android:orientation="vertical" />
 
     <ScrollView
-        android:id="@+id/scrl1"
+        android:id="@+id/MainScroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/editlay"
@@ -45,7 +79,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/editlay"
-        android:layout_below="@+id/scrl1"
+        android:layout_below="@+id/MainScroll"
         android:visibility="gone">
 
         <TextView

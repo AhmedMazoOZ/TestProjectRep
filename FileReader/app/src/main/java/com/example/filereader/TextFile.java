@@ -9,7 +9,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
@@ -40,6 +39,7 @@ public class TextFile implements FileProcessing {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -90,6 +90,16 @@ public class TextFile implements FileProcessing {
     }
 
     @Override
+    public SpannableStringBuilder LinkClick(String link) {
+
+        SpannableStringBuilder sb = new SpannableStringBuilder(link);
+        sb.setSpan(new UnderlineSpan(), 0, link.length(), 0);
+        sb.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, link.length(), SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sb;
+
+    }
+
+    @Override
     public List<String> ReadDectionaryLine(Context context) {
         Headlines.clear();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(context.getAssets().open(name)))) {
@@ -113,11 +123,13 @@ public class TextFile implements FileProcessing {
         }
         return newHeadlines;
     }
+
     public static boolean startsWithNumber(String str) {
         return str != null && str.length() > 0 && Character.isDigit(str.charAt(0));
     }
+
     @Override
-    public void processHeadlines(Context context,List<String> line, String hexColor,float ratio) {
+    public void processHeadlines(Context context, List<String> line, String hexColor, float ratio) {
         MainActivity.hLinesCont.removeAllViews();
         MainActivity.sections.removeAllViews();
         Log.d("sdfsdfsdf", String.valueOf(line.size()));
@@ -134,16 +146,16 @@ public class TextFile implements FileProcessing {
             String StoryTitle = line.get(i).substring(3, line.get(i).length()).trim();
             SpannableStringBuilder Span_Story_title = new SpannableStringBuilder(StoryTitle);
             Span_Story_title.setSpan(new ForegroundColorSpan(Color.RED), 0, StoryTitle.length(), 0);
-            Span_Story_title.setSpan(new AbsoluteSizeSpan((int) ratio),0, StoryTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            Span_Story_title.setSpan(new AbsoluteSizeSpan((int) ratio), 0, StoryTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             try {
-                Paragraph = new StringBuilder(getParagraphforTitle(context,StoryTitle));
+                Paragraph = new StringBuilder(getParagraphforTitle(context, StoryTitle));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             SpannableStringBuilder Span_Story_paragraph = new SpannableStringBuilder(Paragraph);
             Span_Story_paragraph.setSpan(new ForegroundColorSpan(color), 0, Paragraph.length(), 0);
-            Span_Story_paragraph.setSpan(new AbsoluteSizeSpan((int) ratio),0, Span_Story_paragraph.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            Span_Story_paragraph.setSpan(new AbsoluteSizeSpan((int) ratio), 0, Span_Story_paragraph.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 
             TextView textView = new TextView(context);
@@ -204,7 +216,7 @@ public class TextFile implements FileProcessing {
                 public void onClick(View view) {
                     Log.d("werwedsfsd",
                             String.valueOf(view.getId()));
-                   // TextView targetTxv = (TextView) findViewById(subTitle.getId());
+                    // TextView targetTxv = (TextView) findViewById(subTitle.getId());
                     //scrollToTextViewPosition(targetTxv);
                 }
             });
@@ -212,6 +224,7 @@ public class TextFile implements FileProcessing {
         }
         //scrl1.addView(sections);
     }
+
     public String getParagraphforTitle(Context context, String title) throws IOException {
         StringBuilder paragraph = new StringBuilder();
         boolean foundTitle = false;
@@ -219,14 +232,20 @@ public class TextFile implements FileProcessing {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(context.getAssets().open(name)))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                // Check if the line matches the title (case-insensitive)
+                // Check if the line matches the title
 
                 if (line.trim().equalsIgnoreCase(title)) {
                     foundTitle = true;
                 } else if (foundTitle) {
                     // Skip empty lines after the title
                     if (!line.isEmpty()) {
-                        paragraph.append(line).append("\n"); // Add line with newline
+                        if(line.matches(".*\\n\\s*")){
+                            foundTitle=true;
+                        }else {
+                            foundTitle=false;
+                            paragraph.append(line).append("\n");
+                        }
+                         // Add line with newline
                     }
                 }
 
